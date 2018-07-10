@@ -13,6 +13,7 @@ namespace PollyDemo.Infrastructure.Extensions
             services.AddScoped<IAppDbContext, AppDbContext>();
 
             return services.AddDbContext<AppDbContext>(options =>
+            
             options.UseSqlServer(connectionString, sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly("PollyDemo.Infrastructure");

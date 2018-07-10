@@ -12,12 +12,12 @@ namespace PollyDemo.API
     {
         public static void Seed(AppDbContext context)
         {
-            CompnyConfiguration.Seed(context);
+            CompanyConfiguration.Seed(context);
 
             context.SaveChanges();
         }
 
-        internal class CompnyConfiguration
+        internal class CompanyConfiguration
         {
             public static void Seed(AppDbContext context)
             {
@@ -45,8 +45,6 @@ namespace PollyDemo.API
                 context.SaveChanges();
             }
         }
-
-
     }
 
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
