@@ -14,6 +14,6 @@ namespace PollyDemo.API.Features.Companies
 
         [HttpGet]
         public async Task<ActionResult<MaybeGetCompaniesQuery.Response>> Get()
-            => await _mediator.Send(new MaybeGetCompaniesQuery.Request())            
+            => await _mediator.Send(new MaybeGetCompaniesQuery.Request());            
     }
 }
