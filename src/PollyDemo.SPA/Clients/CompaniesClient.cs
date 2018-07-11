@@ -1,5 +1,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using PollyDemo.Core.Extensions;
 
 namespace PollyDemo.SPA.Clients
 {
@@ -9,7 +11,7 @@ namespace PollyDemo.SPA.Clients
         public CompaniesClient(HttpClient client)
             => _client = client;
 
-        public async Task<HttpResponseMessage> Get()
-            => await _client.GetAsync("api/companies");
+        public async Task<ActionResult<dynamic>> Get()
+            => await _client.GetAsync<dynamic>("api/companies");
     }
 }

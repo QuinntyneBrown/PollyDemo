@@ -29,9 +29,7 @@ namespace PollyDemo.SPA
                 client.BaseAddress = new Uri("http://localhost:4861");
             }).
             AddTransientHttpErrorPolicy(policyBuilder
-                        => policyBuilder.CircuitBreakerAsync(
-                            handledEventsAllowedBeforeBreaking: 2,
-                            durationOfBreak: TimeSpan.FromMinutes(1)));
+                        => policyBuilder.RetryAsync(10));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 

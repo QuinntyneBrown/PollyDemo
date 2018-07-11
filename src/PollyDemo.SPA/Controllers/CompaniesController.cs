@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PollyDemo.SPA.Clients;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PollyDemo.SPA.Controllers
