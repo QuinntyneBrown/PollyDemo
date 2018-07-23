@@ -2,13 +2,13 @@ using PollyDemo.Core.Models;
 
 namespace PollyDemo.API.Features.Companies
 {
-    public class CompanyApiModel
+    public class CompanyDto
     {        
         public int CompanyId { get; set; }
         public string Name { get; set; }
 
-        public static CompanyApiModel FromCompany(Company company)
-            => new CompanyApiModel
+        public static CompanyDto FromCompany(Company company)
+            => new CompanyDto
             {
                 CompanyId = company.CompanyId,
                 Name = company.Name

@@ -27,11 +27,11 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\src\app\shared\" />
-    <Folder Include="Clients\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PollyDemo.Core\PollyDemo.Core.csproj" />
+    <ProjectReference Include="..\PollyDemo.Infrastructure\PollyDemo.Infrastructure.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

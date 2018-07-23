@@ -15,7 +15,7 @@ namespace PollyDemo.API.Features.Companies
 
         public class Response
         {
-            public IEnumerable<CompanyApiModel> Companies { get; set; }
+            public IEnumerable<CompanyDto> Companies { get; set; }
         }
 
         public class Handler : IRequestHandler<Request, Response>
@@ -34,7 +34,7 @@ namespace PollyDemo.API.Features.Companies
 
                 return new Response()
                 {
-                    Companies = await _context.Companies.Select(x => CompanyApiModel.FromCompany(x)).ToListAsync()
+                    Companies = await _context.Companies.Select(x => CompanyDto.FromCompany(x)).ToListAsync()
                 };
             }
             public static int RandomNumber(int min = 0, int max = 30)

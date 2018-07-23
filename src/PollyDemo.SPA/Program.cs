@@ -5,8 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
+using Polly.Timeout;
+using PollyDemo.Infrastructure.DelegatingHandlers;
 using PollyDemo.SPA.Clients;
 using System;
+using System.Net.Http;
 
 namespace PollyDemo.SPA
 {
@@ -24,13 +27,14 @@ namespace PollyDemo.SPA
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient<CompaniesClient>(client =>
+            services.AddTransient<RetryHandler>();
+
+            services
+                .AddHttpClient<CompaniesClient>("companies",client =>
             {
                 client.BaseAddress = new Uri("http://localhost:4861");
-            }).
-            AddTransientHttpErrorPolicy(policyBuilder
-                        => policyBuilder.RetryAsync(10));
-
+            }).AddHttpMessageHandler<RetryHandler>();
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddSpaStaticFiles(configuration 
