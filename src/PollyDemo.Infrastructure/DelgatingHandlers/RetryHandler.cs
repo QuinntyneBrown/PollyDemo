@@ -23,9 +23,9 @@ namespace PollyDemo.Infrastructure.DelegatingHandlers
             _cancellationToken = cancellationToken;
 
             Context context = new Polly.Context {
-                { "retrycount ", 0}
+                { "retrycount", 0}
             };
-
+            
             return Policy
                 .Handle<HttpRequestException>()
                 .WaitAndRetryAsync(5, (n) => TimeSpan.FromSeconds(n), (Action<Exception, TimeSpan, int, Context>)LogFailure)
@@ -35,19 +35,20 @@ namespace PollyDemo.Infrastructure.DelegatingHandlers
 
         private async Task<HttpResponseMessage> ExecuteAsync(Context context) {
 
-            var response = await base.SendAsync(_request, _cancellationToken);
-            response.EnsureSuccessStatusCode();
-            return response;
-        }
-
-        private void LogFailure(Exception exception, TimeSpan waitTime, int retryCount, Context context)
-        {
             if (context.TryGetValue("retrycount", out var retryObject) && retryObject is int retries)
             {
                 retries++;
                 context["retrycount"] = retries;
             }
 
+            var response = await base.SendAsync(_request, _cancellationToken);
+            response.EnsureSuccessStatusCode();
+            response.Headers.Add("X-Retry-Count", $"{context["retrycount"]}");
+            return response;
+        }
+
+        private void LogFailure(Exception exception, TimeSpan waitTime, int retryCount, Context context)
+        {
             _logger.LogWarning("Retrying again after {WaitTime} - count: {RetryCount}", waitTime, retryCount);
         }
     }

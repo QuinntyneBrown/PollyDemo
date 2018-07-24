@@ -30,6 +30,8 @@ namespace PollyDemo.SPA
         {
             services.AddTransient<RetryHandler>();
 
+            services.AddHttpContextAccessor();
+
             // https://youtu.be/Lb12ZtlyMPg?t=2687
 
             // Using HttpClientFactory under the hood
@@ -52,7 +54,7 @@ namespace PollyDemo.SPA
             services
                 .AddHttpClient<CompaniesClient>("companies",client =>
             {
-                client.BaseAddress = new Uri("http://localhost:4861");
+                client.BaseAddress = new Uri("http://localhost:61448");
             })
             .SetHandlerLifetime(TimeSpan.FromSeconds(2))
             .AddHttpMessageHandler<RetryHandler>();
