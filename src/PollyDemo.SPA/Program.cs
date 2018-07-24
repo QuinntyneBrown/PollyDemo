@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http;
 using Polly;
 using Polly.Timeout;
 using PollyDemo.Infrastructure.DelegatingHandlers;
@@ -29,11 +30,32 @@ namespace PollyDemo.SPA
         {
             services.AddTransient<RetryHandler>();
 
+            // https://youtu.be/Lb12ZtlyMPg?t=2687
+
+            // Using HttpClientFactory under the hood
+            // https://github.com/aspnet/HttpClientFactory/blob/master/src/Microsoft.Extensions.Http/DependencyInjection/HttpClientBuilderExtensions.cs
+
+            //services.AddTransient<CompaniesClient>(s =>
+            //{
+            //    var httpClientFactory = s.GetRequiredService<IHttpClientFactory>();
+            //    var httpClient = httpClientFactory.CreateClient("companies");
+
+            //    var typedClientFactory = s.GetRequiredService<ITypedHttpClientFactory<CompaniesClient>>();
+            //    return typedClientFactory.CreateClient(httpClient);
+            //});
+
+            // Caching the HttpClient can result into issues
+            // Framework always gives a new HttpClient, but the message handlers and connections are cached appropiately
+
+            // DNS issues
+
             services
                 .AddHttpClient<CompaniesClient>("companies",client =>
             {
                 client.BaseAddress = new Uri("http://localhost:4861");
-            }).AddHttpMessageHandler<RetryHandler>();
+            })
+            .SetHandlerLifetime(TimeSpan.FromSeconds(2))
+            .AddHttpMessageHandler<RetryHandler>();
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 

@@ -20,9 +20,9 @@ namespace PollyDemo.SPA.Controllers
 
         [HttpGet]
         public async Task<ActionResult<dynamic>> Get()
-        {
-            var client = _factory.CreateClient("companies");
-            return await client.GetAsync<dynamic>("api/companies");
+        {            
+            return await _factory.CreateClient("companies")
+                .GetAsync<dynamic>("api/companies");
             
             return await _client.Get();
         }

@@ -10,7 +10,8 @@ namespace PollyDemo.Infrastructure.DelegatingHandlers
     public class RetryHandler : DelegatingHandler
     {
         private readonly ILogger<RetryHandler> _logger;
-
+        private HttpRequestMessage _request;
+        private CancellationToken _cancellationToken;
         public RetryHandler(ILogger<RetryHandler> logger)
         {
             _logger = logger;
@@ -18,20 +19,35 @@ namespace PollyDemo.Infrastructure.DelegatingHandlers
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            _request = request;
+            _cancellationToken = cancellationToken;
+
+            Context context = new Polly.Context {
+                { "retrycount ", 0}
+            };
+
             return Policy
                 .Handle<HttpRequestException>()
                 .WaitAndRetryAsync(5, (n) => TimeSpan.FromSeconds(n), (Action<Exception, TimeSpan, int, Context>)LogFailure)
-                .ExecuteAsync(async () =>
-                {
-                    var response = await base.SendAsync(request, cancellationToken);
-                    response.EnsureSuccessStatusCode();
-                    return response;
-                })
-            ;
+                .ExecuteAsync(() => ((Func<Context,Task<HttpResponseMessage>>)ExecuteAsync)(context));
+
+        }
+
+        private async Task<HttpResponseMessage> ExecuteAsync(Context context) {
+
+            var response = await base.SendAsync(_request, _cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
         }
 
         private void LogFailure(Exception exception, TimeSpan waitTime, int retryCount, Context context)
         {
+            if (context.TryGetValue("retrycount", out var retryObject) && retryObject is int retries)
+            {
+                retries++;
+                context["retrycount"] = retries;
+            }
+
             _logger.LogWarning("Retrying again after {WaitTime} - count: {RetryCount}", waitTime, retryCount);
         }
     }
